@@ -1,8 +1,47 @@
 // Fonts
 @import url('https://fonts.googleapis.com/css?family=Nunito');
 
-// Variables
+// Variáveis e mixins
 @import 'variables';
+@import 'mixins';
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+#app {
+    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    #wrapper {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+}
+
+main {
+    padding-top: 0;
+    position: relative;
+    height: 100%;
+    .container-fluid {
+        max-width: 100% !important;
+        margin: 0 0 !important;
+        flex: 1;
+        height: 100%;
+        .row {
+            flex: 1;
+            height: 100%;
+        }
+    }
+}
+
+#menu {
+    // box-shadow: inset 0 0.125rem 0.25rem rgb(150 0 0 / 30%) !important;
+    box-shadow: 5px 0 5px -5px rgb(0 0 0 / 20%);
+}
+
+#navbar-usuario {
+    box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 20%) !important;
+}
