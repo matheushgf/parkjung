@@ -7,6 +7,7 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+@import '~bootstrap-icons/font/bootstrap-icons';
 
 #app {
     min-height: 100vh;
@@ -30,7 +31,7 @@ main {
         margin: 0 0 !important;
         flex: 1;
         height: 100%;
-        .row {
+        .row:not(.auto-height) {
             flex: 1;
             height: 100%;
         }
@@ -38,10 +39,185 @@ main {
 }
 
 #menu {
-    // box-shadow: inset 0 0.125rem 0.25rem rgb(150 0 0 / 30%) !important;
     box-shadow: 5px 0 5px -5px rgb(0 0 0 / 20%);
+    padding-right: 0;
+    .list-group {
+        width: 100%;
+        border-radius: 0;
+        border: none;
+        a {
+            border: none;
+        }
+    }
 }
 
 #navbar-usuario {
     box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 20%) !important;
+}
+
+#search {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+//TYESTE
+.main-search-input {
+    padding: 0 80px 0 0;
+    border-radius: 1px;
+    box-shadow: 0px 0px 0px 2px rgba(255,255,255,0.3);
+}
+
+.fl-wrap {
+    float: left;
+    width: 100%;
+    position: relative;
+}
+
+.main-search-input-item {
+    float: left;
+    width: 100%;
+    box-sizing: border-box;
+    height: 30px;
+    position: relative;
+}
+
+.main-search-input-item input:first-child {
+    border-radius: 100%;
+}
+
+.main-search-input-item input {
+    float: left;
+    border: none;
+    width: 100%;
+    height: 30px;
+    padding-left: 20px;
+    background-color: #212529;
+    color: white;
+}
+
+.main-search-button{
+      background: $cor-destaque-1;
+}
+
+.main-search-button {
+    position: absolute;
+    right: 0px;
+    height: 30px;
+    width: 80px;
+    color: #fff;
+    top: 0;
+    border: none;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    cursor: pointer;
+}
+
+.main-search-input-wrap {
+    max-width: 500px;
+    position: relative;
+}
+
+:focus {
+    outline: 0;
+}
+
+
+@media only screen and (max-width: 768px){
+    .main-search-input {
+        background: rgba(255,255,255,0.2);
+        padding: 14px 20px 10px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 0px 10px rgba(255,255,255,0.0);
+    }
+
+    .main-search-input-item {
+        width: 100%;
+        border: 1px solid #fff;
+        height: 50px;
+        border: none;
+        margin-bottom: 10px;
+    }
+
+    .main-search-input-item input {
+        border-radius: 6px !important;
+        background-color: #212529;
+    }
+
+    .main-search-button {
+        position: relative;
+        float: left;
+        width: 100%;
+        border-radius: 6px;
+    }
+}
+
+#btn-form-modal-novo {
+    background-color: $cor-destaque-1;
+    color: white;
+    border: none;
+    height: 50px;
+    width: 50px;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1px;
+    box-shadow: 0px 0px 0px 2px rgb(255 255 255 / 30%);
+}
+
+form {
+    div > div.alert {
+        padding: 0.5rem;
+    }
+}
+
+.btn-park, .btn-park:active {
+    background-color: $cor-destaque-1;
+    color: white;
+    width: auto;
+    a, a:active {
+        text-decoration: none;
+        color: white;
+    }
+}
+
+.btn-park:hover {
+    background-color: darken($cor-destaque-1, 10%);
+    color: white;
+    a:hover {
+        text-decoration: none;
+        color: white;
+    }
+}
+
+.table-hover {
+    tbody {
+        tr:hover {
+            td {
+                form {
+                    width: 100%;
+                    .btn-park {
+                        background-color: white;
+                        color: $cor-destaque;
+                    }
+                    a:hover, button:hover {
+                        color: darken($cor-destaque, 20%);
+                    }
+                }
+            }
+        }
+    }
+}
+
+.success-park {
+    height: auto;
+    padding: 0.5rem;
+    p {
+        margin: 0;
+    }
+    .btn-close {
+        padding: 0.76rem 0.5rem;
+    }
 }

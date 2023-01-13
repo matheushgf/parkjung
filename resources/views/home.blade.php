@@ -12,7 +12,9 @@
                             {{ session('status') }}
                         </div>
                     @endif
+                    {{ Route::currentRouteName() }}
 
+                    
                     {{ __('You are logged in!') }}
                 </div>
             </div>

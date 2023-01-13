@@ -1,0 +1,45 @@
+@extends('layouts.app')
+
+@php
+    $action = 'produto';
+@endphp
+
+@section('content')
+    <div class="row justify-content-end auto-height">
+        <span class="btn align-self-end me-3 btn-park text-center" id="btnVoltar"><a href="{{ route('produtos.list') }}">Voltar</a></span>
+    </div>
+    <div class="row justify-content-center auto-height">
+        <h3 class="text-center mb-3">Edição - Produto</h3>
+        <div class="col-sm-12 col-md-6">
+            <form action="{{ route('produtos.update', ['produto' => $produto]) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+
+                <div class="mb-3 form-floating">
+                    <input name="nome" class="form-control @error('nome') mb-1 is-invalid @enderror" type="text" placeholder="Nome" value="{{ $produto->nome }}">
+                    <label for="nome">Nome<span class="text-danger">*</span></label>
+                    @error('nome')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3 form-floating">
+                    <input name="descricao" class="form-control @error('descricao') mb-1 is-invalid @enderror" type="text" placeholder="Descrição" value="{{ $produto->descricao }}">
+                    <label for="descricao">Descrição</label>
+                    @error('descricao')
+                        <div class="alert text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3 form-floating">
+                    <input name="preco" class="form-control @error('preco') mb-1 is-invalid @enderror" type="number" step="0.01" placeholder="Preço" value="{{ $produto->preco }}">
+                    <label for="preco">Preço<span class="text-danger">*</span></label>
+                    @error('preco')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+                <button type="submit" class="btn btn-park">Salvar</button>
+            </form>
+        </div>
+    </div>
+@endsection

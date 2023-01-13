@@ -7,9 +7,10 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Park Jung') }}</title>
 
     <!-- Scripts -->
+    <script src="{{ asset('js/jquery.js') }}"></script>
     <script src="{{ asset('js/app.js') }}" defer></script>
 
     <!-- Fonts -->
@@ -81,15 +82,46 @@
                     <div class="row">
                         @auth
                             @section('menu')
+                                @php
+                                    $controller = explode('@', class_basename(app('request')->route()->getAction()['controller']))[0] ?: '';
+                                @endphp
                                 <div id="menu" class="col-sm-3 col-lg-2 ps-0 pt-3">
-                                    Oi
+                                    <div class="list-group">
+                                        <a href="{{ route('home') }}" class="list-group-item list-group-item-action {{ $controller == 'HomeController' ? 'active' : '' }}" aria-current="{{ $controller == 'HomeController' ? 'true' : 'false' }}">
+                                            Início
+                                        </a>
+                                        <a href="{{ route('produtos.list') }}" class="list-group-item list-group-item-action {{ $controller == 'ProdutosController' ? 'active' : '' }}" aria-current="{{ $controller == 'ProdutosController' ? 'true' : 'false' }}">
+                                            Produtos
+                                        </a>
+                                    </div>
                                 </div>
                             @show
-                            <div class="col-sm-9 col-lg-10 pt-3">
+                            <div class="col-sm-9 col-lg-10 pt-3 box-sizing-content">
                         @endauth
                         @guest
-                            <div class="col-md-12 pt-3">
+                            <div class="col-md-12 pt-3 box-sizing-content">
                         @endguest
+                        @auth
+                                @if(!empty($listagem))
+                                    <div class="row justify-content-end auto-height">
+                                        <div class="col-md-12 justify-content-between" id="search">
+                                            <div>
+                                                <a id="btn-form-modal-novo" type="button" class="btn fs-4" href="{{ route($action . 's.new') }}">
+                                                    <i class="bi bi-plus-lg"></i>
+                                                </a>
+                                            </div>
+                                            <div class="main-search-input-wrap">
+                                                <form class="main-search-input fl-wrap" action="">
+                                                    <div class="main-search-input-item">
+                                                        <input name="search" type="text" value="{{ !empty($params['search']) ? $params['search'] : '' }}" placeholder="Procurar" id="search-input">
+                                                    </div>
+                                                    <button type="submit" class="main-search-button" id="search-button"><i class="bi bi-search"></i></button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                        @endauth
                                 @yield('content')
                             </div>
                     </div>

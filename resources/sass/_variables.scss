@@ -1,6 +1,18 @@
 // Body
 $body-bg: #f8fafc;
 
+//Bootstrap
+$cor-destaque: #dc0000;
+$cor-destaque-1: rgba($cor-destaque, 0.3);
+$pagination-color: white;
+$pagination-active-bg: $cor-destaque-1;
+$pagination-active-border-color: $cor-destaque-1;
+$pagination-hover-color: $cor-destaque;
+$table-hover-bg: $cor-destaque-1;
+$list-group-active-bg: $cor-destaque-1;
+$pagination-focus-box-shadow: 0 0 0 0.25rem $cor-destaque-1;
+$pagination-focus-color: $cor-destaque;
+
 // Typography
 $font-family-sans-serif: 'Nunito', sans-serif;
 $font-size-base: 0.9rem;
