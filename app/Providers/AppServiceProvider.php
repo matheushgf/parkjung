@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use App\Models\PersonalAccessToken;
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Routing\UrlGenerator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,8 +25,12 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(UrlGenerator $url)
     {
+        if (env('APP_ENV') == 'production') {
+            $url->forceScheme('https');
+        }
+        
         Paginator::useBootstrap();
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
     }
