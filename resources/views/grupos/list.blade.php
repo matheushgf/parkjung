@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-    $action = 'produto';
+    $action = 'grupo';
 @endphp
 
 @section('content')
@@ -18,29 +18,29 @@
                     <tr>
                         <th scope="col" width="15%">Nome</th>
                         <th scope="col">Descrição</th>
-                        <th scope="col">Preço</th>
-                        <th scope="col" width="10%">Status</th>
+                        <th scope="col">Status</th>
                         <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($produtos as $produto)
+                    @foreach($grupos as $grupo)
                         <tr>
-                            <td>{{ $produto->nome }}</td>
-                            <td>{{ $produto->descricao }}</td>
-                            <td>{{ $produto->preco_editado }}</td>
-                            <td>{{ $produto->status_editado }}</td>
+                            <td>{{ $grupo->nome }}</td>
+                            <td>{{ $grupo->descricao }}</td>
+                            <td>{{ $grupo->status_editado }}</td>
                             <td>
-                                <form action="{{ route($produto->status == true ? 'produtos.delete' : 'produtos.restore', $produto->id) }}" method="POST" class="d-flex justify-content-evenly">
-                                    <a class="btn btn-park" href="{{ route('produtos.editar', $produto->id) }}"><i class="bi bi-pencil-fill"></i></a>
+                                <form action="{{ route($grupo->status == true ? 'grupos.delete' : 'grupos.restore', $grupo->id) }}" method="POST" class="d-flex justify-content-evenly">
+                                    <a class="btn btn-park" href="{{ route('grupos.editar', $grupo->id) }}"><i class="bi bi-pencil-fill"></i></a>
+
+                                    <a class="btn btn-park" href="{{ route('grupos.permissoes', $grupo->id) }}"><i class="bi bi-shield-fill-check"></i></a>
 
                                     @csrf
-                                    @if($produto->status == true)
+                                    @if($grupo->status == true)
                                         @method('DELETE')
                                     @else
                                         @method('PUT')
                                     @endif
-                                    <button type="submit" class="btn btn-park"><i class="bi bi-{{ $produto->status == true ? 'toggle-off' : 'toggle-on' }}"></i></button>
+                                    <button type="submit" class="btn btn-park"><i class="bi bi-{{ $grupo->status == true ? 'toggle-off' : 'toggle-on' }}"></i></button>
                                 </form>
                             </td>
                         </tr>
@@ -48,7 +48,7 @@
                 </tbody>
             </table>
             <div class="d-flex justify-content-center">
-                {!! $produtos->links() !!}
+                {!! $grupos->links() !!}
             </div>
         </div>
     </div>

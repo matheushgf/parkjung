@@ -19,6 +19,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 <body>
     <div id="app">
@@ -93,6 +94,9 @@
                                         <a href="{{ route('produtos.list') }}" class="list-group-item list-group-item-action {{ $controller == 'ProdutosController' ? 'active' : '' }}" aria-current="{{ $controller == 'ProdutosController' ? 'true' : 'false' }}">
                                             Produtos
                                         </a>
+                                        <a href="{{ route('grupos.list') }}" class="list-group-item list-group-item-action {{ $controller == 'GruposController' ? 'active' : '' }}" aria-current="{{ $controller == 'GruposController' ? 'true' : 'false' }}">
+                                            Grupos
+                                        </a>
                                     </div>
                                 </div>
                             @show
@@ -130,4 +134,7 @@
         </div>
     </div>
 </body>
+<footer>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</footer>
 </html>

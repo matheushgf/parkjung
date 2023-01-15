@@ -10,7 +10,6 @@ class ProdutosController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
     }
     
     public function index(Request $request)
@@ -27,14 +26,15 @@ class ProdutosController extends Controller
         ]);
     }
 
-    public function new() {
+    public function new()
+    {
         return view('produtos.new');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nome' => 'required|min:4|max:255',
+            'nome' => 'required|min:3|max:255',
             'descricao' => 'string|nullable',
             'preco' => ['required', new Decimal(2, 2)],
         ]);
@@ -43,7 +43,8 @@ class ProdutosController extends Controller
         return redirect()->route('produtos.list')->with('success','Produto cadastrado com sucesso.');
     }
 
-    public function edit(Produto $produto) {
+    public function edit(Produto $produto)
+    {
         return view('produtos.edit', compact('produto'));
     }
 

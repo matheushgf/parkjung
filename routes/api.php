@@ -17,3 +17,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::controller(App\Http\Controllers\GruposController::class)
+    ->prefix('grupos')
+    ->name('grupos.')
+    ->middleware('auth:sanctum')
+    ->group(function () {
+        Route::get('/getusers', 'getUsers')->name('api.getUsers');
+    });

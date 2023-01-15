@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@inject('grupo', \App\Models\Grupo::class)
+
 @section('content')
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -12,9 +14,9 @@
                             {{ session('status') }}
                         </div>
                     @endif
-                    {{ Route::currentRouteName() }}
+                    {{-- {{ $grupo::with('permissoes')->get() }} --}}
+                    {{-- {{ $grupo::with('usuarios')->get() }} --}}
 
-                    
                     {{ __('You are logged in!') }}
                 </div>
             </div>

@@ -4,18 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Scout\Searchable;
 
 class Permissao extends Model
 {
-    use HasFactory;
-    use Searchable;
+    use HasFactory, Searchable;
 
     protected $table = 'permissoes';
     public $timestamps = false;
 
     protected $fillable = [
+        'nome',
         'funcionalidade'
     ];
 
@@ -24,9 +23,22 @@ class Permissao extends Model
         'funcionalidade'
     ];
 
-    public function getListagem($search) {
+    public function getListagem($search)
+    {
         return Permissao::search($search)->paginate(10);
     }
 
+    public function getFuncionalidades()
+    {
+        return Permissao::all()->pluck('funcionalidade')->toArray();
+    }
+
     //Casters
+
+    //Relacionamentos
+    public function grupos()
+    {
+        return $this->belongsToMany(Grupo::class)
+            ->withTimestamps();
+    }
 }

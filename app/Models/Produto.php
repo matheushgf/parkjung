@@ -9,8 +9,7 @@ use Laravel\Scout\Searchable;
 
 class Produto extends Model
 {
-    use HasFactory;
-    use Searchable;
+    use HasFactory, Searchable;
 
     protected $table = 'produtos';
     public $timestamps = false;
@@ -30,7 +29,12 @@ class Produto extends Model
         'preco'
     ];
 
-    public function getListagem($search) {
+    public function getListagem($search)
+    {
+        //TODO: melhorar
+        // $produtos = Produto::paginate(10);
+        // return $produtos->paginate(10);
+
         return Produto::search($search)->paginate(10);
     }
 
@@ -47,12 +51,26 @@ class Produto extends Model
         return new Attribute(
             get: fn ($value, $attributes) => $attributes['status'] ? 'Ativo' : 'Inativo',
         );
-    }   
+    }
 
+    //Atributos
     public function attributes()
     {
         return [
             'preco' => 'preço',
+            'descricao' => 'descrição'
         ];
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray()
+    {
+        $array = $this->toArray();
+  
+        return $array;
     }
 }

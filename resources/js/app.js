@@ -31,6 +31,24 @@ const app = new Vue({
     el: '#app',
 });
 
-$('#search-button').click(function(){
-    console.log('oi');
+$(document).ready(function() {
+    // Select2 Multiple
+    $('.select-user').select2({
+        placeholder: "Usuários",
+        allowClear: true,
+        ajax: {
+            url: 'localhost:8000',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    search: params.term,
+                    page: params.page || 1
+                }
+            
+                // Query parameters will be ?search=[term]&page=[page]
+                return query;
+            }
+        }
+    });
+
 });

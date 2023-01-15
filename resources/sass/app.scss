@@ -221,3 +221,29 @@ form {
         padding: 0.76rem 0.5rem;
     }
 }
+
+hr.divider { 
+    opacity: 0.10;
+}
+
+.form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem $cor-destaque-1;
+    border-color: $cor-destaque-1;
+}
+
+.form-switch .form-check-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%28255, 255, 255, 0.25%29'/%3e%3c/svg%3e");
+    background-position: left center;
+}
+.form-switch .form-check-input:focus {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%28220, 0, 0, 0.3%29'/%3e%3c/svg%3e");
+}
+
+.form-switch .form-check-input:checked {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e");
+    background-position: right center;
+    transition: background-position 0.15s ease-in-out;
+    background-color: $cor-destaque;
+    border-color: $cor-destaque;
+}
+
