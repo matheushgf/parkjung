@@ -14,9 +14,10 @@ class CreateGrupoUserTable extends Migration
     public function up()
     {
         Schema::create('grupo_user', function (Blueprint $table) {
-            $table->id();
             $table->integer('grupo_id');
             $table->integer('user_id');
+            $table->primary(['grupo_id', 'user_id']);	
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

@@ -57,4 +57,14 @@ class User extends Authenticatable
 
         return $this->api_token;
     }
+
+    public function getUsersEditado($termo = '') {
+        $query = $this::select('id', 'name as text');
+
+        if(!empty($termo)){
+            $query = $query->where('name', 'like', '%' . $termo . '%');
+        }
+        
+        return $query->paginate(10); 
+    }
 }

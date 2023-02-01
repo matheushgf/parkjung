@@ -48,3 +48,17 @@ Route::controller(App\Http\Controllers\GruposController::class)
         Route::get('/permissoes/{grupo}', 'permissoes')->name('permissoes');
         Route::put('/permissoes/store/{grupo}', 'storePermissoes')->name('permissoes.store');
     });
+
+Route::controller(App\Http\Controllers\ReceitasController::class)
+    ->prefix('receitas')
+    ->name('receitas.')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('/', 'index')->name('list');
+        Route::get('/novo', 'new')->name('new');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/editar/{receita}', 'edit')->name('editar');
+        Route::put('/update/{receita}', 'update')->name('update');
+        Route::delete('/delete/{receita}', 'delete')->name('delete');
+        Route::put('/restore/{receita}', 'restore')->name('restore');
+    });

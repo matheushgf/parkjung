@@ -2,18 +2,9 @@
 
 @php
     $action = 'grupo';
-    $permissoesLer = $grupo->permissoes()
-        ->where('ler', true)
-        ->pluck('id')
-        ->toArray();
-    $permissoesEscrever = $grupo->permissoes()
-        ->where('escrever', true)
-        ->pluck('id')
-        ->toArray();
 @endphp
-
+    
 @section('content')
-    {{ $token->plainTextToken }}
     <div class="row justify-content-end auto-height">
         <span class="btn align-self-end me-3 btn-park text-center" id="btnVoltar"><a href="{{ route('grupos.list') }}">Voltar</a></span>
     </div>
@@ -38,14 +29,11 @@
                 </div>
                 <div>
                     <div class="form-group mb-3">
-                        <label for="select-user">Multiple Tags</label>
-                        <select class="select-user form-control" name="users[]" multiple="multiple"
+                        <label for="select-user">Usuários do grupo</label>
+                        <select class="select-user" name="users[]" multiple="multiple" style="width: 100%"
                           id="select-user">
-                          <option value="tag1">tag1</option>
-                          <option value="tag2">tag2</option>
-                          <option value="tag3">tag3</option>               
                         </select>
-                      </div>
+                    </div>
                 </div>
                 @foreach($permissoes as $permissao)
                     @php
@@ -72,6 +60,50 @@
                 @endforeach
                 <button type="submit" class="btn btn-park mt-4">Salvar</button>
             </form>
+            <div id="jsonUsuarios" class="d-none">
+                {{ $jsonUsuarios }}
+            </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            var selectUsers = $('.select-user');
+            selectUsers.select2({
+                placeholder: "Usuários",
+                allowClear: false,
+                language: 'pt-BR',
+                theme: 'bootstrap-5',
+                minimumInputLength: 3,
+                ajax: {
+                    url: "{{ route("grupos.api.getUsers") }}",
+                    dataType: 'json',
+                    method: 'GET',
+                    data: function (params) {
+                        var query = {
+                            search: params.term
+                        }
+                    
+                        return query;
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.data
+                        };
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('Authorization', 'Bearer {{ $token }}');
+                    }
+                }
+            });
+
+            var usuariosGrupo = $.parseJSON($('#jsonUsuarios').html());
+            $('#jsonUsuarios').remove();
+
+            usuariosGrupo.forEach(function(usuario){
+                var optionUsuario = new Option(usuario.name, usuario.id, true, true);
+                selectUsers.append(optionUsuario).trigger('change');
+            });
+        });
+    </script>
 @endsection

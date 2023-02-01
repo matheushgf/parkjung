@@ -7,16 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Scout\Searchable;
 
-class Produto extends Model
+class Receita extends Model
 {
     use HasFactory, Searchable;
 
-    protected $table = 'produtos';
-    public $timestamps = false;
+    protected $table = 'receitas';
+    public $timestamps = true;
 
     protected $fillable = [
         'nome',
         'descricao',
+        'gerado',
         'status',
         'preco'
     ];
@@ -25,13 +26,14 @@ class Produto extends Model
     protected $COLUNAS_LISTAGEM = [
         'nome',
         'descricao',
+        'gerado',
         'status',
         'preco'
     ];
 
     public function getListagem($search)
     {
-        return Produto::search($search)->paginate(10);
+        return Receita::search($search)->paginate(10);
     }
 
     //Casters
@@ -50,11 +52,24 @@ class Produto extends Model
     }
 
     //Relacionamentos
+    //Retorna as receitas dentro desta receita
     public function receitas()
+    {
+        return $this->morphedByMany(Receita::class, 'produto_receita')->withPivot('status', 'quantidade');
+    }
+
+    //Retorna os produtos dentro desta receita
+    public function produtos()
+    {
+        return $this->morphedByMany(Produto::class, 'produto_receita')->withPivot('status', 'quantidade');
+    }
+
+    //Retorna em quais receitas esta receita está
+    public function receitauso()
     {
         return $this->morphToMany(Receita::class, 'produto_receita')->withPivot('status', 'quantidade');
     }
-    
+
     //Atributos
     public function attributes()
     {
@@ -76,8 +91,8 @@ class Produto extends Model
         return $array;
     }
 
-    public function getProdutosEditado($termo = '') {
-        $query = $this::selectRaw("id, nome as text, 'App.Models.Produto' as type");
+    public function getReceitasEditado($termo = '') {
+        $query = $this::selectRaw("id, nome as text, 'App.Models.Receita' as type");
 
         if(!empty($termo)){
             $query = $query->where('nome', 'like', '%' . $termo . '%');

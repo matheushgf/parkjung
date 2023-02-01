@@ -12,6 +12,11 @@
     <!-- Scripts -->
     <script src="{{ asset('js/jquery.js') }}"></script>
     <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/pt-BR.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    
+    @stack('script_pagina')
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -20,6 +25,8 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 </head>
 <body>
     <div id="app">
@@ -97,6 +104,9 @@
                                         <a href="{{ route('grupos.list') }}" class="list-group-item list-group-item-action {{ $controller == 'GruposController' ? 'active' : '' }}" aria-current="{{ $controller == 'GruposController' ? 'true' : 'false' }}">
                                             Grupos
                                         </a>
+                                        <a href="{{ route('receitas.list') }}" class="list-group-item list-group-item-action {{ $controller == 'ReceitasController' ? 'active' : '' }}" aria-current="{{ $controller == 'ReceitasController' ? 'true' : 'false' }}">
+                                            Receitas
+                                        </a>
                                     </div>
                                 </div>
                             @show
@@ -135,6 +145,5 @@
     </div>
 </body>
 <footer>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </footer>
 </html>

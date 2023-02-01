@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5e84754089c6e05d0160bf8f1ee39db0",
+    "content-hash": "31a6e69ea96a637f7e83b468d049a1c6",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -540,6 +540,45 @@
                 }
             ],
             "time": "2022-09-10T18:51:20+00:00"
+        },
+        {
+            "name": "eastwest/json",
+            "version": "v3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jannejava/laravel-json.git",
+                "reference": "d422d6c1523ff3f8c2094dc8cb6087b71f76272e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jannejava/laravel-json/zipball/d422d6c1523ff3f8c2094dc8cb6087b71f76272e",
+                "reference": "d422d6c1523ff3f8c2094dc8cb6087b71f76272e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Eastwest\\Json\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Jan Östlund",
+                    "email": "janne@eastwest.se"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/jannejava/laravel-json/issues",
+                "source": "https://github.com/jannejava/laravel-json/tree/v3.0"
+            },
+            "time": "2018-06-14T09:20:22+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -7932,5 +7971,5 @@
         "php": "^8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.1.0"
 }

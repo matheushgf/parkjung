@@ -14,8 +14,6 @@
                             {{ session('status') }}
                         </div>
                     @endif
-                    {{-- {{ $grupo::with('permissoes')->get() }} --}}
-                    {{-- {{ $grupo::with('usuarios')->get() }} --}}
 
                     {{ __('You are logged in!') }}
                 </div>

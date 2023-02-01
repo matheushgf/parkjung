@@ -57,6 +57,7 @@ class Grupo extends Model
 
     public function usuarios()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)
+            ->withTimestamps();
     }
 }

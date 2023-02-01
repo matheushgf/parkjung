@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Grupo;
 use App\Models\Permissao;
 use App\Models\User;
-use App\Models\PersonalAccessToken;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Eastwest\Json\Json;
 
 class GruposController extends Controller
 {
@@ -22,7 +22,7 @@ class GruposController extends Controller
 
         $grupos = (new Grupo())
             ->getListagem(!empty($params['search']) ? $params['search'] : '');
-
+        
         return view('grupos.list', [
             'grupos' => $grupos,
             'params' => $params,
@@ -79,30 +79,70 @@ class GruposController extends Controller
     public function permissoes(Grupo $grupo)
     {
         $user = Auth::user();
-        $tokens = $user->tokens();
-        $token = $user->createToken('grupos');
+        
+        $permissoesLer = $grupo->permissoes()
+            ->where('ler', true)
+            ->pluck('id')
+            ->toArray();
+        $permissoesEscrever = $grupo->permissoes()
+            ->where('escrever', true)
+            ->pluck('id')
+            ->toArray();
+        $usuarios = $grupo->usuarios()
+            ->where('status', true)
+            ->get();
+
+        $jsonUsuarios = Json::encode($usuarios, JSON_UNESCAPED_SLASHES);
 
         return view('grupos.permissoes', [
             'grupo' => $grupo,
             'permissoes' => Permissao::with('grupos')->get(),
             'listagem' => false,
-            'token' => $token
+            'token' => $user->createToken('grupos_getUsers', ['grupos-getUsers'])->plainTextToken,
+            'permissoesLer' => $permissoesLer,
+            'permissoesEscrever' => $permissoesEscrever,
+            'jsonUsuarios' => $jsonUsuarios
         ]);
     }
 
     public function storePermissoes(Request $request, Grupo $grupo)
     {
-        $grupo_permissoes = [];
+        $usuariosSelecionados = $request->input('users');
+        $grupoPermissoes = [];
+        $grupoUsuarios = [];
+
         foreach (Permissao::all() as $permissao) {
             $id = $permissao->funcionalidade;
-            $grupo_permissoes[] = ['permissao_id' => $permissao->id, 'grupo_id' => $grupo->id, 'ler' => !empty($request->input($id . '_ler')), 'escrever' => !empty($request->input($id . '_escrever'))];
+            $grupoPermissoes[] = ['permissao_id' => $permissao->id, 'grupo_id' => $grupo->id, 'ler' => !empty($request->input($id . '_ler')), 'escrever' => !empty($request->input($id . '_escrever'))];
         }
 
-        DB::table('grupo_permissao')->upsert(
-            $grupo_permissoes,
-            ['permissao_id', 'grupo_id'],
-            ['ler', 'escrever']
-        );
+        foreach ($usuariosSelecionados as $usuario) {
+            $grupoUsuarios[] = ['grupo_id' => $grupo->id, 'user_id' => $usuario, 'status' => true, 'updated_at' => now(), 'created_at' => now()];
+        }
+        
+        //Atualiza permissões
+        DB::table('grupo_permissao')
+            ->upsert(
+                $grupoPermissoes,
+                ['permissao_id', 'grupo_id'],
+                ['ler', 'escrever']
+            );
+
+        //Atualiza removidos
+        DB::table('grupo_user')
+            ->whereNotIn('user_id', $usuariosSelecionados)
+            ->where('status', true)
+            ->update(
+                ['status' => false]
+            );
+        
+        //Atualiza adicionados
+        DB::table('grupo_user')
+            ->upsert(
+                $grupoUsuarios,
+                ['user_id', 'grupo_id'],
+                ['status', 'updated_at']
+            );
 
         return redirect()->route('grupos.permissoes', $grupo->id)->with('success','Permissões salvas com sucesso.');
     }
@@ -111,7 +151,7 @@ class GruposController extends Controller
     {
         $params = $request->all();
 
-        $usuarios = User::all();
+        $usuarios = (new User())->getUsersEditado(!empty($params['search']) ? $params['search'] : '');
 
         return $usuarios;
     }
