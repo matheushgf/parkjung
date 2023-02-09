@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProdutoReceitaTable extends Migration
+class CreateComboProdutoTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,13 @@ class CreateProdutoReceitaTable extends Migration
      */
     public function up()
     {
-        Schema::create('produto_receitas', function (Blueprint $table) {
-            $table->integer('receita_id');
-            $table->integer('produto_receita_id');
-            $table->string('produto_receita_type');
+        Schema::create('combo_produtos', function (Blueprint $table) {
+            $table->integer('combo_id');
+            $table->integer('combo_produto_id');
+            $table->string('combo_produto_type');
             $table->boolean('status')->default(true);
             $table->integer('quantidade');
-            $table->unique(['receita_id', 'produto_receita_id', 'produto_receita_type'], 'produto_receitas_combinacao_unica');
+            $table->unique(['combo_id', 'combo_produto_id', 'combo_produto_type'], 'combo_produtos_combinacao_unica');
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ class CreateProdutoReceitaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('produto_receitas');
+        Schema::dropIfExists('combo_produtos');
     }
 }

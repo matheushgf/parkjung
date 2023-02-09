@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EstoqueHistorico;
 use Illuminate\Http\Request;
 use App\Models\Receita;
-use App\Models\Produto;
+use App\Models\Estoque;
 use Axiom\Rules\Decimal;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Eastwest\Json\Json;
+use Illuminate\Validation\Rule;
 
-class ReceitasController extends Controller
+class EstoquesController extends Controller
 {
     public function __construct()
     {
@@ -20,11 +21,11 @@ class ReceitasController extends Controller
     {
         $params = $request->all();
 
-        $receitas = (new Receita())
+        $estoques = (new Estoque())
             ->getListagem(!empty($params['search']) ? $params['search'] : '');
 
-        return view('receitas.list', [
-            'receitas' => $receitas,
+        return view('estoques.list', [
+            'estoques' => $estoques,
             'params' => $params,
             'listagem' => true
         ]);
@@ -32,54 +33,107 @@ class ReceitasController extends Controller
 
     public function new()
     {
-        return view('receitas.new');
+        $user = Auth::user();
+
+        return view('estoques.new', [
+            'token' => $user->createToken('receitas_getIngredientes', ['receitas-getIngredientes'])->plainTextToken,
+            'tipos' => EstoqueHistorico::TIPOS_OPERACAO_TEXTO
+        ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nome' => 'required|min:3|max:255',
-            'descricao' => 'string|nullable',
-            'gerado' => 'required|integer|min:1',
-            'preco' => [new Decimal(2, 2), 'nullable']
+            'estocavel_id' => 'required|integer',
+            'estocavel_type' => 'string|nullable',
+            'quantidade' => 'required|integer|min:1',
+            'tipo' => Rule::in(EstoqueHistorico::TIPOS_OPERACAO),
         ]);
 
-        Receita::create($request->post());
-        return redirect()->route('receitas.list')->with('success','Receita cadastrada com sucesso.');
+        $params = $request->post();
+        $user = Auth::user();
+        $estoque = Estoque::where([
+            ['estocavel_id', '=', $params['estocavel_id']],
+            ['estocavel_type', '=', $params['estocavel_type']]
+        ])->first();
+
+        if (!$estoque) {
+            $quantidade = 0;
+
+            switch ((int) $params['tipo']) {
+                case EstoqueHistorico::TIPO_OPERACAO_ENTRADA:
+                    $quantidade += (int) $params['quantidade'];
+                    break;
+                case EstoqueHistorico::TIPO_OPERACAO_SAIDA:
+                    return redirect()->back()
+                        ->withErrors(['tipo' => ['A primeira operação de um item não pode ser negativa']])
+                        ->withInput();
+            }
+            
+            $estoque = Estoque::create([
+                'estocavel_id' => $params['estocavel_id'],
+                'estocavel_type' => $params['estocavel_type'],
+                'quantidade' => $quantidade,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        } else {
+            $quantidade = $estoque->quantidade;
+
+            switch ((int) $params['tipo']) {
+                case EstoqueHistorico::TIPO_OPERACAO_ENTRADA:
+                    $quantidade += (int) $params['quantidade'];
+                    break;
+                case EstoqueHistorico::TIPO_OPERACAO_SAIDA:
+                    $quantidade -= (int) $params['quantidade'];
+                    break;
+            }
+
+            if ($quantidade < 0) {
+                return redirect()->back()
+                    ->withErrors(['tipo' => ['Saldo de estoque insuficiente para retirada']])
+                    ->withInput();
+            }
+
+            $estoque->quantidade = $quantidade;
+            $estoque->updated_at = now();
+            $estoque->save();
+        }
+        EstoqueHistorico::create(
+            [
+                'estoque_id' => $estoque->id,
+                'user_id' => $user->id,
+                'quantidade' => $params['quantidade'],
+                'tipo' => (int) $params['tipo'],
+                'created_at' => now(),
+                'updated_at' => now()
+            ]
+        );
+        
+        return redirect()->route('estoques.list')->with('success','Operação de estoque realizada com sucesso.');
     }
 
-    public function edit(Receita $receita)
-    {
+    public function historico(Request $request, Estoque $estoque) {
+        $params = $request->all();
         $user = Auth::user();
-        
-        $ingredientesObject = [];
-        foreach ($receita->receitas()->wherePivot('status', '=', true)->get() as $receitaIn) {
-            $ingredientesObjectItem = [
-                'tipo' => 'App.Models.Receita',
-                'id' => $receitaIn->id,
-                'text' => $receitaIn->nome,
-                'quantidade' => $receitaIn->pivot->quantidade
-            ];
 
-            $ingredientesObject[] = $ingredientesObjectItem;
-        }
-        foreach ($receita->produtos()->wherePivot('status', '=', true)->get() as $produto) {
-            $ingredientesObjectItem = [
-                'tipo' => 'App.Models.Produto',
-                'id' => $produto->id,
-                'text' => $produto->nome,
-                'quantidade' => $produto->pivot->quantidade
-            ];
+        $historicos = (new EstoqueHistorico())->getListagem(
+            $estoque->id,
+            !empty($params['user']) ? $params['user'] : null,
+            !empty($params['tipo']) ? $params['tipo'] : null,
+            !empty($params['data-inicio']) ? $params['data-inicio'] : null,
+            !empty($params['data-final']) ? $params['data-final'] : null
+        );
 
-            $ingredientesObject[] = $ingredientesObjectItem;
-        }
-        $jsonIngredientes = Json::encode($ingredientesObject, JSON_UNESCAPED_SLASHES);
-
-        return view('receitas.edit', [
-            'receita' => $receita,
-            'token' => $user->createToken('receitas_getIngredientes', ['receitas-getIngredientes'])->plainTextToken,
-            'ingredientes' => $ingredientesObject,
-            'jsonIngredientes' => $jsonIngredientes
+        return view('estoques.historico', [
+            'historicos' => $historicos,
+            'estoque' => $estoque,
+            'params' => $params,
+            'tokenUsuarios' => $user->createToken('grupos_getUsers', ['grupos-getUsers'])->plainTextToken,
+            'tipos' => EstoqueHistorico::TIPOS_OPERACAO_TEXTO,
+            'listagem' => true,
+            'ignorarNovo' => true,
+            'ignorarPesquisa' => true
         ]);
     }
 
@@ -211,26 +265,5 @@ class ReceitasController extends Controller
         $receita->status = true;
         $receita->save();
         return redirect()->route('receitas.list')->with('success','Receita ativada com sucesso.');
-    }
-
-    public function getIngredientes(Request $request)
-    {
-        $params = $request->all();
-        $searchEstocavel = !empty($params['search_estocavel']);
-
-        if ($searchEstocavel) {
-            switch ($params['estocavel_type']) {
-                case 'App.Models.Receita':
-                    return (new Receita())->getReceitasEditado('', $params['estocavel_id'])->first()->toArray();
-                case 'App.Models.Produto':
-                    return (new Produto())->getProdutosEditado('', $params['estocavel_id'])->first()->toArray();
-            }
-        }
-
-        $receitas = (new Receita())->getReceitasEditado(!empty($params['search']) ? $params['search'] : '')->toArray();
-        $produtos = (new Produto())->getProdutosEditado(!empty($params['search']) ? $params['search'] : '')->toArray();
-        $itens = array_merge($receitas['data'], $produtos['data']);
-
-        return $itens;
     }
 }

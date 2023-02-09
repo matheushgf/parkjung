@@ -70,6 +70,16 @@ class Receita extends Model
         return $this->morphToMany(Receita::class, 'produto_receita')->withPivot('status', 'quantidade');
     }
 
+    public function combos()
+    {
+        return $this->morphToMany(Combo::class, 'combo_produto')->withPivot('status', 'quantidade');
+    }
+
+    public function estoque()
+    {
+        return $this->morphMany(Estoque::class, 'estocavel');
+    }
+
     //Atributos
     public function attributes()
     {
@@ -91,13 +101,16 @@ class Receita extends Model
         return $array;
     }
 
-    public function getReceitasEditado($termo = '') {
-        $query = $this::selectRaw("id, nome as text, 'App.Models.Receita' as type");
+    public function getReceitasEditado($termo = '', $id = null) {
+        $query = $this::selectRaw("id, nome as text, 'App.Models.Receita' as tipo");
 
-        if(!empty($termo)){
+        if (!empty($termo)) {
             $query = $query->where('nome', 'like', '%' . $termo . '%');
         }
+        if (!empty($id)) {
+            $query = $query->where('id', '=', $id);
+        }
         
-        return $query->paginate(10); 
+        return $query->paginate(10);
     }
 }

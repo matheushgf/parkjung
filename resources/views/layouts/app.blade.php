@@ -107,6 +107,12 @@
                                         <a href="{{ route('receitas.list') }}" class="list-group-item list-group-item-action {{ $controller == 'ReceitasController' ? 'active' : '' }}" aria-current="{{ $controller == 'ReceitasController' ? 'true' : 'false' }}">
                                             Receitas
                                         </a>
+                                        <a href="{{ route('combos.list') }}" class="list-group-item list-group-item-action {{ $controller == 'CombosController' ? 'active' : '' }}" aria-current="{{ $controller == 'CombosController' ? 'true' : 'false' }}">
+                                            Combos
+                                        </a>
+                                        <a href="{{ route('estoques.list') }}" class="list-group-item list-group-item-action {{ $controller == 'EstoquesController' ? 'active' : '' }}" aria-current="{{ $controller == 'EstoquesController' ? 'true' : 'false' }}">
+                                            Estoques
+                                        </a>
                                     </div>
                                 </div>
                             @show
@@ -119,19 +125,23 @@
                                 @if(!empty($listagem))
                                     <div class="row justify-content-end auto-height">
                                         <div class="col-md-12 justify-content-between" id="search">
-                                            <div>
-                                                <a id="btn-form-modal-novo" type="button" class="btn fs-4" href="{{ route($action . 's.new') }}">
-                                                    <i class="bi bi-plus-lg"></i>
-                                                </a>
-                                            </div>
-                                            <div class="main-search-input-wrap">
-                                                <form class="main-search-input fl-wrap" action="">
-                                                    <div class="main-search-input-item">
-                                                        <input name="search" type="text" value="{{ !empty($params['search']) ? $params['search'] : '' }}" placeholder="Procurar" id="search-input">
-                                                    </div>
-                                                    <button type="submit" class="main-search-button" id="search-button"><i class="bi bi-search"></i></button>
-                                                </form>
-                                            </div>
+                                            @if(empty($ignorarNovo))
+                                                <div>
+                                                    <a id="btn-form-modal-novo" type="button" class="btn fs-4" href="{{ route($action . 's.new') }}">
+                                                        <i class="bi bi-plus-lg"></i>
+                                                    </a>
+                                                </div>
+                                            @endif
+                                            @if(empty($ignorarPesquisa))
+                                                <div class="main-search-input-wrap">
+                                                    <form class="main-search-input fl-wrap" action="">
+                                                        <div class="main-search-input-item">
+                                                            <input name="search" type="text" value="{{ !empty($params['search']) ? $params['search'] : '' }}" placeholder="Procurar" id="search-input">
+                                                        </div>
+                                                        <button type="submit" class="main-search-button" id="search-button"><i class="bi bi-search"></i></button>
+                                                    </form>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 @endif

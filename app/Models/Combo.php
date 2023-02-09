@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Scout\Searchable;
 
-class Produto extends Model
+class Combo extends Model
 {
     use HasFactory, Searchable;
 
-    protected $table = 'produtos';
-    public $timestamps = false;
+    protected $table = 'combos';
+    public $timestamps = true;
 
     protected $fillable = [
         'nome',
@@ -31,7 +31,7 @@ class Produto extends Model
 
     public function getListagem($search)
     {
-        return Produto::search($search)->paginate(10);
+        return Combo::search($search)->paginate(10);
     }
 
     //Casters
@@ -50,21 +50,18 @@ class Produto extends Model
     }
 
     //Relacionamentos
+    //Retorna as receitas dentro desta receita
     public function receitas()
     {
-        return $this->morphToMany(Receita::class, 'produto_receita')->withPivot('status', 'quantidade');
+        return $this->morphedByMany(Receita::class, 'combo_produto')->withPivot('status', 'quantidade');
     }
 
-    public function combos()
+    //Retorna os produtos dentro desta receita
+    public function produtos()
     {
-        return $this->morphToMany(Combo::class, 'combo_produto')->withPivot('status', 'quantidade');
+        return $this->morphedByMany(Produto::class, 'combo_produto')->withPivot('status', 'quantidade');
     }
 
-    public function estoque()
-    {
-        return $this->morphMany(Estoque::class, 'estocavel');
-    }
-    
     //Atributos
     public function attributes()
     {
@@ -86,16 +83,13 @@ class Produto extends Model
         return $array;
     }
 
-    public function getProdutosEditado($termo = '', $id = null) {
-        $query = $this::selectRaw("id, nome as text, 'App.Models.Produto' as tipo");
+    public function getCombosEditado($termo = '') {
+        $query = $this::selectRaw("id, nome as text, 'App.Models.Combo' as tipo");
 
         if(!empty($termo)){
             $query = $query->where('nome', 'like', '%' . $termo . '%');
         }
-        if (!empty($id)) {
-            $query = $query->where('id', '=', $id);
-        }
         
-        return $query->paginate(10); 
+        return $query->paginate(10);
     }
 }

@@ -3,7 +3,7 @@
 @php
     use Eastwest\Json\Json;
 
-    $action = 'receita';
+    $action = 'combo';
     $qtdIngredientes = 0;
 
     if (!empty(old())) {
@@ -19,20 +19,19 @@
         $jsonIngredientes = Json::encode($ingredientesOld, JSON_UNESCAPED_SLASHES);
     }
 
-    $nome = !empty(old('nome')) ? old('nome') : $receita->nome;
-    $descricao = !empty(old('descricao')) ? old('descricao') : $receita->descricao;
-    $gerado = !empty(old('gerado')) ? old('gerado') : $receita->gerado;
-    $preco = !empty(old('preco')) ? old('preco') : $receita->preco;
+    $nome = !empty(old('nome')) ? old('nome') : $combo->nome;
+    $descricao = !empty(old('descricao')) ? old('descricao') : $combo->descricao;
+    $preco = !empty(old('preco')) ? old('preco') : $combo->preco;
 @endphp
 
 @section('content')
     <div class="row justify-content-end auto-height">
-        <span class="btn align-self-end me-3 btn-park text-center" id="btnVoltar"><a href="{{ route('receitas.list') }}">Voltar</a></span>
+        <span class="btn align-self-end me-3 btn-park text-center" id="btnVoltar"><a href="{{ route('combos.list') }}">Voltar</a></span>
     </div>
     <div class="row justify-content-center auto-height">
-        <h3 class="text-center mb-3">Edição - Receita</h3>
+        <h3 class="text-center mb-3">Edição - Combo</h3>
         <div class="col-sm-12 col-md-6">
-            <form action="{{ route('receitas.update', ['receita' => $receita]) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('combos.update', ['combo' => $combo]) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -53,22 +52,14 @@
                 </div>
 
                 <div class="mb-3 form-floating">
-                    <input name="gerado" class="form-control @error('gerado') mb-1 is-invalid @enderror" type="number" min="1" step="1" placeholder="Quantidade gerada" value="{{ $gerado }}">
-                    <label for="gerado">Quantidade gerada<span class="text-danger">*</span></label>
-                    @error('gerado')
-                        <div class="alert text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3 form-floating">
-                    <input name="preco" class="form-control @error('preco') mb-1 is-invalid @enderror" type="number" min="0.01" step="0.01" placeholder="Preço" value="{{ $preco }}">
-                    <label for="preco">Preço</label>
+                    <input name="preco" min="0.01" class="form-control @error('preco') mb-1 is-invalid @enderror" type="number" step="0.01" placeholder="Preço" value="{{ $preco }}">
+                    <label for="preco">Preço<span class="text-danger">*</span></label>
                     @error('preco')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div id="produtos-receita">
+                <div id="produtos-combo">
                     <hr class="hr divider"/>
                     <h5 class="mb-3">Ingredientes</h5>
                     <div>
@@ -115,13 +106,6 @@
 
             if (ingredientesTipo[tipo].includes(item.id)) {
                 toastr.error("Ingrediente já adicionado", "Erro ao adicionar ingrediente");
-                return ;
-            }
-            if (
-                item.id == {{ $receita->id }}
-                && tipo == 'App\\Models\\Receita'
-            ) {
-                toastr.error("Você não pode adicionar a própria receita como ingrediente", "Erro ao adicionar ingrediente");
                 return ;
             }
 

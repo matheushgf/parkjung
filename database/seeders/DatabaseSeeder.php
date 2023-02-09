@@ -9,6 +9,7 @@ use \App\Models\User;
 use \App\Models\Permissao;
 use \App\Models\Grupo;
 use \App\Models\Receita;
+use \App\Models\Combo;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
@@ -123,7 +124,6 @@ class DatabaseSeeder extends Seeder
         $rec->nome = 'Arroz Cozido';
         $rec->descricao = 'Arroz já cozido';
         $rec->gerado = 5;
-        $rec->preco = 0.00;
         $rec->save();
         
         //Receita_Produto
@@ -188,5 +188,11 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now()
             ]
         ]);
+
+        //Combos
+        $com = new Combo;
+        $com->nome = 'Jung Dad';
+        $com->preco = 1200.00;
+        $com->save();
     }
 }

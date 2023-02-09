@@ -247,6 +247,35 @@ hr.divider {
     border-color: $cor-destaque;
 }
 
-.select-user {
-    min-width: 200px;
+.input-width-100 {
+    width: 100%;
 }
+
+.filtro {
+    display: flex;
+    align-items: flex-end;
+    .form-group {
+        width: 100%;
+    }
+}
+
+.search-button{
+    background: $cor-destaque-1;
+}
+
+.search-button {
+  height: 30px;
+  //width: 80px;
+  color: #fff;
+  border: none;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  cursor: pointer;
+}
+
+.filtros-div {
+    border: 1px solid rgba(#495057, 0.4);
+    border-radius: 0.375rem;
+}
+
+//Select2

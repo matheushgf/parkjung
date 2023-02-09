@@ -50,6 +50,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Grupo::class);
     }
 
+    public function historicos_estoque()
+    {
+        return $this->hasMany(EstoqueHistorico::class);
+    }
+
     public function generateToken()
     {
         $this->api_token = str_random(60);
@@ -58,10 +63,13 @@ class User extends Authenticatable
         return $this->api_token;
     }
 
-    public function getUsersEditado($termo = '') {
+    public function getUsersEditado($termo = '', $id) {
         $query = $this::select('id', 'name as text');
 
-        if(!empty($termo)){
+        if (!empty($id)) {
+            $query = $query->where('id', '=', $id);
+        }
+        if (!empty($termo)) {
             $query = $query->where('name', 'like', '%' . $termo . '%');
         }
         

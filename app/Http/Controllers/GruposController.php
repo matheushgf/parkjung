@@ -151,7 +151,10 @@ class GruposController extends Controller
     {
         $params = $request->all();
 
-        $usuarios = (new User())->getUsersEditado(!empty($params['search']) ? $params['search'] : '');
+        $usuarios = (new User())->getUsersEditado(
+            !empty($params['search']) ? $params['search'] : '',
+            !empty($params['user_id']) ? $params['user_id'] : null
+        );
 
         return $usuarios;
     }

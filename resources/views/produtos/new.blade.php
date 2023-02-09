@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="mb-3 form-floating">
-                    <input name="preco" class="form-control @error('preco') mb-1 is-invalid @enderror" type="number" step="0.01" placeholder="Preço" value="{{ old('preco') }}">
+                    <input name="preco" class="form-control @error('preco') mb-1 is-invalid @enderror" type="number" min="0.01" step="0.01" placeholder="Preço" value="{{ old('preco') }}">
                     <label for="preco">Preço<span class="text-danger">*</span></label>
                     @error('preco')
                         <div class="text-danger">{{ $message }}</div>

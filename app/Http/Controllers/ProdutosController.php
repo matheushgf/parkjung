@@ -73,13 +73,4 @@ class ProdutosController extends Controller
         $produto->save();
         return redirect()->route('produtos.list')->with('success','Produto ativado com sucesso.');
     }
-
-    public function getProdutos(Request $request)
-    {
-        $params = $request->all();
-
-        $usuarios = (new Produto())->getProdutosEditado(!empty($params['search']) ? $params['search'] : '');
-
-        return $usuarios;
-    }
 }

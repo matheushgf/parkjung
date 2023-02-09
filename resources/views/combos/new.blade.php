@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
 @php
-    $action = 'receita';
+    $action = 'combo';
 @endphp
 
 @section('content')
     <div class="row justify-content-end auto-height">
-        <span class="btn align-self-end me-3 btn-park text-center" id="btnVoltar"><a href="{{ route('receitas.list') }}">Voltar</a></span>
+        <span class="btn align-self-end me-3 btn-park text-center" id="btnVoltar"><a href="{{ route('combos.list') }}">Voltar</a></span>
     </div>
     <div class="row justify-content-center auto-height">
-        <h3 class="text-center mb-3">Cadastro - Receita</h3>
+        <h3 class="text-center mb-3">Cadastro - Combo</h3>
         <div class="col-sm-12 col-md-6">
-            <form action="{{ route('receitas.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('combos.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('POST')
 
@@ -32,16 +32,8 @@
                 </div>
 
                 <div class="mb-3 form-floating">
-                    <input name="gerado" class="form-control @error('gerado') mb-1 is-invalid @enderror" type="number" step="1" placeholder="Quantidade gerada" value="{{ old('gerado') }}">
-                    <label for="gerado">Quantidade gerada<span class="text-danger">*</span></label>
-                    @error('gerado')
-                        <div class="alert text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3 form-floating">
                     <input name="preco" class="form-control @error('preco') mb-1 is-invalid @enderror" type="number" step="0.01" placeholder="Preço" value="{{ old('preco') }}">
-                    <label for="preco">Preço</label>
+                    <label for="preco">Preço<span class="text-danger">*</span></label>
                     @error('preco')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror

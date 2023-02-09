@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Receita;
-use App\Models\Produto;
+use App\Models\Combo;
 use Axiom\Rules\Decimal;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Eastwest\Json\Json;
 
-class ReceitasController extends Controller
+class CombosController extends Controller
 {
     public function __construct()
     {
@@ -20,11 +21,11 @@ class ReceitasController extends Controller
     {
         $params = $request->all();
 
-        $receitas = (new Receita())
+        $combos = (new Combo())
             ->getListagem(!empty($params['search']) ? $params['search'] : '');
 
-        return view('receitas.list', [
-            'receitas' => $receitas,
+        return view('combos.list', [
+            'combos' => $combos,
             'params' => $params,
             'listagem' => true
         ]);
@@ -32,7 +33,7 @@ class ReceitasController extends Controller
 
     public function new()
     {
-        return view('receitas.new');
+        return view('combos.new');
     }
 
     public function store(Request $request)
@@ -40,30 +41,29 @@ class ReceitasController extends Controller
         $validated = $request->validate([
             'nome' => 'required|min:3|max:255',
             'descricao' => 'string|nullable',
-            'gerado' => 'required|integer|min:1',
-            'preco' => [new Decimal(2, 2), 'nullable']
+            'preco' => ['required', new Decimal(2, 2)]
         ]);
 
-        Receita::create($request->post());
-        return redirect()->route('receitas.list')->with('success','Receita cadastrada com sucesso.');
+        Combo::create($request->post());
+        return redirect()->route('combos.list')->with('success','Combo cadastrado com sucesso.');
     }
 
-    public function edit(Receita $receita)
+    public function edit(Combo $combo)
     {
         $user = Auth::user();
         
         $ingredientesObject = [];
-        foreach ($receita->receitas()->wherePivot('status', '=', true)->get() as $receitaIn) {
+        foreach ($combo->receitas()->wherePivot('status', '=', true)->get() as $receita) {
             $ingredientesObjectItem = [
                 'tipo' => 'App.Models.Receita',
-                'id' => $receitaIn->id,
-                'text' => $receitaIn->nome,
-                'quantidade' => $receitaIn->pivot->quantidade
+                'id' => $receita->id,
+                'text' => $receita->nome,
+                'quantidade' => $receita->pivot->quantidade
             ];
 
             $ingredientesObject[] = $ingredientesObjectItem;
         }
-        foreach ($receita->produtos()->wherePivot('status', '=', true)->get() as $produto) {
+        foreach ($combo->produtos()->wherePivot('status', '=', true)->get() as $produto) {
             $ingredientesObjectItem = [
                 'tipo' => 'App.Models.Produto',
                 'id' => $produto->id,
@@ -75,34 +75,33 @@ class ReceitasController extends Controller
         }
         $jsonIngredientes = Json::encode($ingredientesObject, JSON_UNESCAPED_SLASHES);
 
-        return view('receitas.edit', [
-            'receita' => $receita,
+        return view('combos.edit', [
+            'combo' => $combo,
             'token' => $user->createToken('receitas_getIngredientes', ['receitas-getIngredientes'])->plainTextToken,
             'ingredientes' => $ingredientesObject,
             'jsonIngredientes' => $jsonIngredientes
         ]);
     }
 
-    public function update(Request $request, Receita $receita)
+    public function update(Request $request, Combo $combo)
     {
         $validated = $request->validate([
             'nome' => 'required|min:4|max:255',
             'descricao' => 'string|nullable',
-            'gerado' => 'required|integer|min:1',
-            'preco' => [new Decimal(2, 2), 'nullable'],
+            'preco' => ['required', new Decimal(2, 2)],
             'ingredientes.*.quantidade' => 'required'
         ]);
 
         $params = $request->post();
         $arIngredientes = $params['ingredientes'];
-        $idReceita = $receita->id;
+        $idCombo = $combo->id;
         $arIngredientesSelecionados = [];
         $arIngredientesAtualizado = [];
         unset($params['ingredientes']);
         
-        $ingredientesAtuais = DB::table('produto_receitas')
+        $ingredientesAtuais = DB::table('combo_produtos')
             ->where([
-                ['receita_id', '=', $idReceita]
+                ['combo_id', '=', $idCombo]
             ])
             ->get();
         
@@ -112,8 +111,8 @@ class ReceitasController extends Controller
             foreach ($ingredientesAtuais as $ingredienteAtual) {
                 //Se id e tipo do selecionado sao iguais ao atual
                 if (
-                    $ingredienteAtual->produto_receita_id == $ingrediente['id']
-                    && $ingredienteAtual->produto_receita_type == $ingrediente['tipo']
+                    $ingredienteAtual->combo_produto_id == $ingrediente['id']
+                    && $ingredienteAtual->combo_produto_type == $ingrediente['tipo']
                 ) {
                     $criar = false;
                 }
@@ -121,9 +120,9 @@ class ReceitasController extends Controller
             if ($criar) {
                 //Cria linha
                 $arIngredientesAtualizado[] = [
-                    'receita_id' => $idReceita,
-                    'produto_receita_id' => $ingrediente['id'],
-                    'produto_receita_type' => $ingrediente['tipo'],
+                    'combo_id' => $idCombo,
+                    'combo_produto_id' => $ingrediente['id'],
+                    'combo_produto_type' => $ingrediente['tipo'],
                     'status' => true,
                     'quantidade' => $ingrediente['quantidade'],
                     'created_at' => now(),
@@ -133,16 +132,16 @@ class ReceitasController extends Controller
         }
 
         foreach($ingredientesAtuais as $ingrediente) {
-            $idIngrediente = $ingrediente->produto_receita_id . '-' . $ingrediente->produto_receita_type;
+            $idIngrediente = $ingrediente->combo_produto_id . '-' . $ingrediente->combo_produto_type;
             $flIngredienteSelecionado = array_key_exists(
                 $idIngrediente, 
                 $arIngredientesSelecionados
             );
             $quantidadeSelecionado = $flIngredienteSelecionado ? $arIngredientesSelecionados[$idIngrediente] : null;
             $ingredienteAtualizado = [
-                'receita_id' => $receita->id,
-                'produto_receita_id' => $ingrediente->produto_receita_id,
-                'produto_receita_type' => $ingrediente->produto_receita_type
+                'combo_id' => $combo->id,
+                'combo_produto_id' => $ingrediente->combo_produto_id,
+                'combo_produto_type' => $ingrediente->combo_produto_type
             ];
             
             //O ingrediente atual não está nos selecionados, remover
@@ -190,47 +189,26 @@ class ReceitasController extends Controller
             $arIngredientesAtualizado[] = $ingredienteAtualizado;
         }
 
-        $receita->fill($params)->save();
-        DB::table('produto_receitas')->upsert(
+        $combo->fill($params)->save();
+        DB::table('combo_produtos')->upsert(
             $arIngredientesAtualizado,
-            ['receita_id', 'produto_receita_id', 'produto_receita_type'],
+            ['combo_id', 'combo_produto_id', 'combo_produto_type'],
             ['status', 'quantidade', 'updated_at']
         );
-        return redirect()->route('receitas.list')->with('success','Receita editada com sucesso.');
+        return redirect()->route('combos.list')->with('success','Combo editado com sucesso.');
     }
 
-    public function delete(Receita $receita)
+    public function delete(Combo $combo)
     {
-        $receita->status = false;
-        $receita->save();
-        return redirect()->route('receitas.list')->with('success','Receita inativada com sucesso.');
+        $combo->status = false;
+        $combo->save();
+        return redirect()->route('combos.list')->with('success','Combo inativado com sucesso.');
     }
 
-    public function restore(Receita $receita)
+    public function restore(Combo $combo)
     {
-        $receita->status = true;
-        $receita->save();
-        return redirect()->route('receitas.list')->with('success','Receita ativada com sucesso.');
-    }
-
-    public function getIngredientes(Request $request)
-    {
-        $params = $request->all();
-        $searchEstocavel = !empty($params['search_estocavel']);
-
-        if ($searchEstocavel) {
-            switch ($params['estocavel_type']) {
-                case 'App.Models.Receita':
-                    return (new Receita())->getReceitasEditado('', $params['estocavel_id'])->first()->toArray();
-                case 'App.Models.Produto':
-                    return (new Produto())->getProdutosEditado('', $params['estocavel_id'])->first()->toArray();
-            }
-        }
-
-        $receitas = (new Receita())->getReceitasEditado(!empty($params['search']) ? $params['search'] : '')->toArray();
-        $produtos = (new Produto())->getProdutosEditado(!empty($params['search']) ? $params['search'] : '')->toArray();
-        $itens = array_merge($receitas['data'], $produtos['data']);
-
-        return $itens;
+        $combo->status = true;
+        $combo->save();
+        return redirect()->route('combos.list')->with('success','Combo ativado com sucesso.');
     }
 }

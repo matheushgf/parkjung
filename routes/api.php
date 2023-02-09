@@ -30,12 +30,5 @@ Route::controller(App\Http\Controllers\ReceitasController::class)
     ->prefix('receitas')
     ->name('receitas.')
     ->group(function () {
-        Route::get('/getreceitas', 'getReceitas')->name('api.getReceitas')->middleware(['auth:sanctum', 'ability:receitas-getIngredientes']);
-    });
-
-Route::controller(App\Http\Controllers\ProdutosController::class)
-    ->prefix('produtos')
-    ->name('produtos.')
-    ->group(function () {
-        Route::get('/getprodutos', 'getProdutos')->name('api.getProdutos')->middleware(['auth:sanctum', 'ability:receitas-getIngredientes']);
+        Route::get('/getingredientes', 'getIngredientes')->name('api.getIngredientes')->middleware(['auth:sanctum', 'ability:receitas-getIngredientes']);
     });

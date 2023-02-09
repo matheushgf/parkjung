@@ -62,3 +62,28 @@ Route::controller(App\Http\Controllers\ReceitasController::class)
         Route::delete('/delete/{receita}', 'delete')->name('delete');
         Route::put('/restore/{receita}', 'restore')->name('restore');
     });
+
+Route::controller(App\Http\Controllers\CombosController::class)
+    ->prefix('combos')
+    ->name('combos.')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('/', 'index')->name('list');
+        Route::get('/novo', 'new')->name('new');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/editar/{combo}', 'edit')->name('editar');
+        Route::put('/update/{combo}', 'update')->name('update');
+        Route::delete('/delete/{combo}', 'delete')->name('delete');
+        Route::put('/restore/{combo}', 'restore')->name('restore');
+    });
+
+Route::controller(App\Http\Controllers\EstoquesController::class)
+    ->prefix('estoques')
+    ->name('estoques.')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('/', 'index')->name('list');
+        Route::get('/novo', 'new')->name('new');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/historico/{estoque}', 'historico')->name('historico');
+    });
